@@ -1,0 +1,12 @@
+---
+ - name: check Mysql service
+   command: dpkg-query -s mysql-server
+   ignore_errors: True 
+   register: mysql_no_exist
+
+ - include: install-mysql.yml
+   when: mysql_no_exist.rc != 0
+
+ - include: have-mysql.yml
+   when: mysql_no_exist.rc == 0
+ 

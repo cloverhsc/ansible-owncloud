@@ -1,0 +1,16 @@
+---
+   # create owncloud database account and database if you had install mysql service
+
+  - name: Create owncloud user account
+    mysql_user: login_user=root
+                login_password={{ mysql_root_password }}
+                name={{ owncloud_account }}
+                password={{ owncloud_password }}
+                priv=owncloud.*:ALL,GRANT 
+                state=present
+
+  - name: Create owncloud database
+    mysql_db: login_user={{ owncloud_account }}
+              login_password={{ owncloud_password }}
+              name=owncloud
+              state=present

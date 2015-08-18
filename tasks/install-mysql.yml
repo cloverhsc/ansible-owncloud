@@ -1,0 +1,26 @@
+---
+ - name: Install Mysql
+   apt: pkg={{ item }} update_cache=yes
+   with_items:
+            - python-mysqldb
+            - mysql-server
+
+   #change mysql root password
+ - name: Change mysql root password
+   mysql_user: name=root 
+               password={{ mysql_root_password }}  
+
+   #create owncloud user account for owncloud
+ - name: create owncloud user account
+   mysql_user: login_user=root
+               login_password={{ mysql_root_password }}
+               name={{ owncloud_account }}
+               password={{ owncloud_password }} 
+               priv=owncloud.*:ALL 
+               state=present 
+
+   #Create database "owncloud" for owncloud
+ - mysql_db: login_user={{ owncloud_account }} 
+             login_password={{ owncloud_password }}
+             name=owncloud 
+             state=present

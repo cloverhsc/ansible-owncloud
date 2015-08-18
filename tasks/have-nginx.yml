@@ -1,0 +1,37 @@
+---
+   # server name https://owncloud.biotrump.com
+   - name: set port 443 for owncloud
+     template: src=owncloud.j2 dest=/etc/nginx/sites-available/owncloud
+
+   # server name http://owncloud.biotrump.com
+   - name: set port 80 redirect to 443
+     template: src=redir-owncloud.j2 dest=/etc/nginx/sites-available/redir-owncloud
+
+   # check if /var/www exist  and save result to  register
+   - name : check if /var/www exist
+     stat: path=/var/www 
+     register: www_exist
+
+   - name: Creates /var/www directory
+     file: path=/var/www state=directory mode=755 
+     when: www_exist.stat.exists==False
+
+   # check link and save result to register
+   - name: check if owncloud link exist
+     stat: path=/etc/nginx/sites-enabled/owncloud
+     register: owncloud_link
+
+      # do link if not exist
+   - name: do link if owncloud link is not exist.
+     command: ln -s /etc/nginx/sites-available/owncloud /etc/nginx/sites-enabled/
+     when: owncloud_link.stat.exists==False  
+  
+   # check link  and save result to register
+   - name: check if redir-owncloud link exist
+     stat: path=/etc/nginx/sites-enabled/redir-owncloud
+     register: redir_owncloud
+
+      #do link if not exist
+   - name: do link if redir-owncloud is not exist.
+     command: ln -s /etc/nginx/sites-available/redir-owncloud /etc/nginx/sites-enabled/
+     when: redir_owncloud.stat.exists==False 

@@ -1,0 +1,54 @@
+- hosts: test 
+  sudo: True
+
+  tasks:
+      - name: update apt
+        apt: pkg=python-mysqldb update_cache=yes
+
+      
+      - include: tasks/mysql-server.yml
+
+
+      - include: tasks/nginx.yml
+
+      - name: install dependance
+        apt: pkg={{ item }}
+        with_items:
+             - php5-gd
+             - php5-json
+             - php5-mysql
+             - php5-curl
+             - php5-intl
+             - php5-mcrypt
+             - php5-imagick
+             - php5-fpm
+     
+      - include: tasks/php5-fpm.yml
+
+      - include: tasks/owncloud.yml
+
+  handlers: 
+    - name: restart nginx
+      service: name=nginx state=restarted
+    
+    - name: restart php5-fpm
+      # can't use service to restart php5-fpm .always failed !!
+      #service: name=php5-fpm state=restarted  <= always failed.
+      command: service php5-fpm restart
+
+  vars:
+       # if you had mysql input your mysql root password for ansible to login
+       # to create owncloud account and database.
+       # if you don't have mysql. ansible will install mysql and use it for 
+       # root password
+     mysql_root_password: "11111111"
+       
+       # What account name of owncloud you want. default :owncloud
+     owncloud_account: "owncloud"
+
+       # what account of owncloud's database password you want. default :12345678
+       # Please fix it for you want.
+     owncloud_password: "12345678"
+ 
+       # what server name of owncloud in nginx you want.
+     owncloud_server_name: "owncloud.biotrump.com"

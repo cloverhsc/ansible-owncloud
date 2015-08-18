@@ -1,0 +1,24 @@
+---
+   #check if nginx exist or not.
+   - name: check nginx service
+     command: dpkg-query -s nginx
+     ignore_errors: True
+     register: nginx_no_exist
+
+   - include: install-nginx.yml
+     when: nginx_no_exist.rc!=0
+
+   - include: have-nginx.yml
+     when: nginx_no_exist.rc==0
+
+   # deploy private https certificates 
+   - name: create /etc/ssl/nginx 
+     file: path=/etc/ssl/nginx state=directory mode=755
+
+   - name: deploy private https certificates  crt file
+     template: src=owncloud.crt.j2 dest=/etc/ssl/nginx/owncloud.crt
+
+   - name: deploy private https ceritificates key file
+     template: src=owncloud.key.j2 dest=/etc/ssl/nginx/owncloud.key
+     notify:
+         - restart nginx

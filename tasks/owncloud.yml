@@ -1,0 +1,14 @@
+---
+   - name: download owncloud-8.0.4.tar.bz2
+     get_url: url=https://download.owncloud.org/community/owncloud-8.0.4.tar.bz2 
+              dest=/tmp/
+              force=no
+              validate_certs=no
+
+
+     # untar to /var/www/ and change owner/group 
+   - unarchive: src=/tmp/owncloud-8.0.4.tar.bz2 
+                dest=/var/www/ 
+                group=www-data 
+                owner=www-data
+                copy=no

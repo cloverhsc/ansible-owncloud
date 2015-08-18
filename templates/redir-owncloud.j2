@@ -1,0 +1,8 @@
+server{
+	listen 80;
+	server_name {{ owncloud_server_name }}; 
+	
+	root /var/www/owncloud;
+	rewrite ^(.*)$  https://$host$1 permanent; 
+	#error_page 404 https://owncloud.biotrump.com;
+}
